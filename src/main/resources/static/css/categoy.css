@@ -13,6 +13,7 @@ body {
     border-radius: 4px;
     margin-bottom: 5px;
     background-color: #f8f9fa;
+    border: 2px solid white;
 }
 .parent-category {
     background-color: #e9ecef;

@@ -43,14 +43,14 @@
                                         <p class="card-text">
                                             <small>
                                                 <c:if test="${userVoucher.voucher.minOrderValue > 0}">
-                                                    Áp dụng cho đơn hàng từ <fmt:formatNumber value="${userVoucher.voucher.minOrderValue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                    Áp dụng cho đơn hàng từ <fmt:formatNumber value="${userVoucher.voucher.minOrderValue}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND
                                                 </c:if>
                                             </small>
                                         </p>
                                         <p class="card-text">
                                             <small>
                                                 <c:if test="${userVoucher.voucher.maxDiscountAmount != null}">
-                                                    Giảm tối đa <fmt:formatNumber value="${userVoucher.voucher.maxDiscountAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                    Giảm tối đa <fmt:formatNumber value="${userVoucher.voucher.maxDiscountAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND
                                                 </c:if>
                                             </small>
                                         </p>
@@ -95,14 +95,14 @@
                                         <p class="card-text">
                                             <small>
                                                 <c:if test="${voucher.minOrderValue > 0}">
-                                                    Áp dụng cho đơn hàng từ <fmt:formatNumber value="${voucher.minOrderValue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                    Áp dụng cho đơn hàng từ <fmt:formatNumber value="${voucher.minOrderValue}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND
                                                 </c:if>
                                             </small>
                                         </p>
                                         <p class="card-text">
                                             <small>
                                                 <c:if test="${voucher.maxDiscountAmount != null}">
-                                                    Giảm tối đa <fmt:formatNumber value="${voucher.maxDiscountAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                    Giảm tối đa <fmt:formatNumber value="${voucher.maxDiscountAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND
                                                 </c:if>
                                             </small>
                                         </p>

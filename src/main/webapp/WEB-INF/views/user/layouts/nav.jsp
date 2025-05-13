@@ -656,14 +656,14 @@
 
                             <div class="menu-items">
                                 <a href="${pageContext.request.contextPath}/profile" class="menu-item">
-                                    <i class="fas fa-user-circle"></i> Thông tin tài khoản
+                                    <i class="fas fa-user-circle"></i> Profile
                                 </a>
                                 <a href="${pageContext.request.contextPath}/user/orders" class="menu-item">
-                                    <i class="fas fa-shopping-bag"></i> Đơn hàng của tôi
+                                    <i class="fas fa-shopping-bag"></i> My order
                                 </a>
                                 <div class="menu-divider"></div>
                                 <a href="${pageContext.request.contextPath}/logout" class="menu-item danger">
-                                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
+                                    <i class="fas fa-sign-out-alt"></i> Logout
                                 </a>
                             </div>
                         </div>
@@ -678,10 +678,10 @@
                                 <path d="M12 12C14.7614 12 17 9.76142 17 7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7C7 9.76142 9.23858 12 12 12Z" stroke="currentColor" stroke-width="1.5"/>
                                 <path d="M20 21C20 18.2386 16.4183 16 12 16C7.58172 16 4 18.2386 4 21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
                             </svg>
-                            <span>Đăng nhập</span>
+                            <span>Login</span>
                         </a>
                         <a href="${pageContext.request.contextPath}/register" class="auth-button register-button">
-                            <span>Đăng ký</span>
+                            <span>Register</span>
                         </a>
                     </div>
                 </c:otherwise>

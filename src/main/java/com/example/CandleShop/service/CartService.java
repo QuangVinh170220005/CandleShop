@@ -107,34 +107,24 @@ public class CartService {
                 .collect(Collectors.toList());
         return cartItemRepository.findAllById(itemIds); // Sửa thành cartItemRepository
     }
-
-
-    // Tính tổng tiền của các cart items
-    public BigDecimal calculateSubtotal(List<CartItem> cartItems) {
-        return cartItems.stream()
-                .map(item -> item.getProductSize().getPrice()
-                        .multiply(new BigDecimal(item.getQuantity())))
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
     public List<CartItem> getCartItemsByIds(List<Long> ids) {
         // Sử dụng join fetch để lấy images cùng với product
         return cartItemRepository.findCartItemsWithProductAndImages(ids);
     }
 
     @Transactional
-    public void updateCartItemQuantity(Long itemId, int quantity) {
-        CartItem cartItem = cartItemRepository.findById(itemId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy item"));
-
+    public void updateCartItemQuantity(Long itemId, Integer quantity) {
         if (quantity < 1) {
-            quantity = 1;
+            // Nếu số lượng < 1, xóa item khỏi giỏ hàng
+            cartItemRepository.deleteById(itemId);
+        } else {
+            // Cập nhật số lượng
+            CartItem cartItem = cartItemRepository.findById(itemId).orElse(null);
+            if (cartItem != null) {
+                cartItem.setQuantity(quantity);
+                cartItemRepository.save(cartItem);
+            }
         }
-
-        cartItem.setQuantity(quantity);
-        cartItemRepository.save(cartItem);
     }
-
-
 }
 

@@ -52,8 +52,8 @@
                                 <td>${voucher.code}</td>
                                 <td>${voucher.discountPercent}%</td>
                                 <td>${voucher.pointsRequired}</td>
-                                <td><fmt:formatNumber value="${voucher.minOrderValue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></td>
-                                <td><fmt:formatNumber value="${voucher.maxDiscountAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></td>
+                                <td><fmt:formatNumber value="${voucher.minOrderValue}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND</td>
+                                <td><fmt:formatNumber value="${voucher.maxDiscountAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND</td>
                                 <td>
                                     <c:if test="${voucher.isActive}">
                                         <span class="badge badge-success">Hoạt động</span>

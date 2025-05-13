@@ -1,4 +1,3 @@
-/* detailProduct.css */
 * {
     margin: 0;
     padding: 0;
@@ -7,7 +6,7 @@
 }
 
 body {
-    margin-top: 8%;
+    margin-top: 20%;
     background-color: #fff;
     color: #333;
 }
@@ -465,5 +464,183 @@ body {
 .action-buttons {
     margin-top: 2rem;
 }
+/* CSS cho nút Thêm vào giỏ hàng */
+.flex-1 {
+    flex: 1;
+}
 
+.bg-brown-600 {
+    background-color: #8b5a2b;
+}
 
+.bg-brown-600:hover {
+    background-color: #6d4621;
+}
+
+.text-white {
+    color: white;
+}
+
+.px-6 {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
+.py-3 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+}
+
+.rounded-md {
+    border-radius: 0.375rem;
+}
+
+.flex {
+    display: flex;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-center {
+    justify-content: center;
+}
+
+.gap-2 {
+    gap: 0.5rem;
+}
+
+.space-x-4 {
+    margin-left: -1rem;
+    margin-right: -1rem;
+}
+
+.space-x-4 > * {
+    margin-left: 1rem;
+    margin-right: 1rem;
+}
+
+.transition-all {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+}
+
+.duration-300 {
+    transition-duration: 300ms;
+}
+
+/* CSS cho nút Yêu thích */
+.wishlist-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    background-color: white;
+    transition: background-color 0.3s;
+}
+
+.wishlist-btn:hover {
+    background-color: #f9fafb;
+}
+
+/* CSS cho phần chọn số lượng */
+.quantity-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.quantity-container label {
+    margin-right: 1rem;
+    font-weight: 500;
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.quantity-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #f9fafb;
+    border: none;
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: background-color 0.3s;
+}
+
+.quantity-btn:hover {
+    background-color: #e5e7eb;
+}
+
+.quantity-controls input {
+    width: 3rem;
+    height: 2.5rem;
+    border: none;
+    border-left: 1px solid #e5e7eb;
+    border-right: 1px solid #e5e7eb;
+    text-align: center;
+    font-size: 1rem;
+    -moz-appearance: textfield;
+}
+
+.quantity-controls input::-webkit-outer-spin-button,
+.quantity-controls input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* CSS cho các nút action */
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Hiệu ứng khi nhấn nút */
+.bg-brown-600:active {
+    transform: scale(0.98);
+}
+
+.wishlist-btn:active {
+    transform: scale(0.98);
+}
+
+/* Thêm animation cho nút thêm vào giỏ hàng */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(139, 90, 43, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(139, 90, 43, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(139, 90, 43, 0);
+    }
+}
+
+.bg-brown-600:hover {
+    animation: pulse 1.5s infinite;
+}
+
+/* Responsive design cho mobile */
+@media (max-width: 640px) {
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .wishlist-btn {
+        margin-top: 0.75rem;
+    }
+}

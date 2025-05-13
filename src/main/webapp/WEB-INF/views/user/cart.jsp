@@ -39,7 +39,6 @@
             </a>
         </div>
     </c:if>
-
     <c:if test="${not empty cartItems}">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <!-- Cart Items -->
@@ -62,28 +61,20 @@
                             <h3 class="font-medium text-gray-900">${item.product.name}</h3>
                             <p class="text-gray-500">Size: ${item.productSize.sizeValue}ml</p>
                             <p class="text-gray-700">
-                                <fmt:formatNumber value="${item.productSize.price}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                <fmt:formatNumber value="${item.productSize.price}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND
                             </p>
                         </div>
                             <div class="flex items-center border rounded-md">
-                                <button onclick="updateQuantity(${item.id}, -1)"
-                                        class="px-3 py-1 hover:bg-gray-100">
-                                    <i class="fas fa-minus"></i>
-                                </button>chắc
                                 <input type="number"
                                        value="${item.quantity}"
                                        min="1"
                                        class="w-12 text-center border-x py-1"
                                        onchange="updateQuantity(${item.id}, this.value, true)"
                                        id="quantity-${item.id}">
-                                <button onclick="updateQuantity(${item.id}, 1)"
-                                        class="px-3 py-1 hover:bg-gray-100">
-                                    <i class="fas fa-plus"></i>
-                                </button>
                             </div>
                         <div class="text-right">
                             <p class="font-medium text-gray-900">
-                                <fmt:formatNumber value="${item.productSize.price * item.quantity}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                <fmt:formatNumber value="${item.productSize.price * item.quantity}" type="number" groupingUsed="true" maxFractionDigits="0"/>
                             </p>
 
                             <button>
@@ -110,16 +101,12 @@
                 <div class="border-t border-gray-200 pt-4 space-y-2">
                     <div class="flex justify-between">
                         <span class="text-gray-600">Tổng tiền hàng</span>
-                        <span id="subtotal" class="font-medium">0₫</span>
-                    </div>
-                    <div class="flex justify-between">
-                        <span class="text-gray-600">Phí vận chuyển</span>
-                        <span class="font-medium">0₫</span>
+                        <span id="subtotal" class="font-medium">0 VND</span>
                     </div>
                 </div>
                 <div class="border-t border-gray-200 mt-4 pt-4 flex justify-between">
                     <span class="text-gray-800 font-medium">Tổng thanh toán</span>
-                    <span id="total" class="text-xl font-semibold text-brown-600">0₫</span>
+                    <span id="total" class="text-xl font-semibold text-brown-600">0 VND</span>
                 </div>
                 <button id="checkout-btn"
                         class="w-full bg-brown-600 text-white py-3 px-4 rounded-md mt-6
@@ -136,10 +123,16 @@
     let selectedItems = [];
     let totalAmount = 0;
 
-    // Định nghĩa hàm formatCurrency trong JavaScript
     function formatCurrency(amount) {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(amount);
+        // Định dạng số với dấu phân cách hàng nghìn
+        const formattedNumber = new Intl.NumberFormat('vi-VN', {
+            maximumFractionDigits: 0
+        }).format(amount);
+
+        // Thêm "VND" vào sau số đã định dạng
+        return formattedNumber + " VND";
     }
+
 
     // Xử lý khi checkbox thay đổi
     document.addEventListener('DOMContentLoaded', function() {
