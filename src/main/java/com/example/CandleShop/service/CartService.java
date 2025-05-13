@@ -1,0 +1,140 @@
+package com.example.CandleShop.service;
+
+import com.example.CandleShop.entity.*;
+import com.example.CandleShop.repository.CartItemRepository;
+import com.example.CandleShop.repository.CartRepository;
+import com.example.CandleShop.repository.ProductImageRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+
+@Service
+public class CartService {
+
+    @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
+    private CartItemRepository cartItemRepository;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private UserService userService;
+
+
+    @Autowired
+    private ProductSizeService productSizeService;
+
+    @Transactional
+    public void addToCart(Long userId, Long productId, Long sizeId, Integer quantity) {
+        // Tìm hoặc tạo giỏ hàng cho user
+        Cart cart = cartRepository.findByUserId(userId);
+        if (cart == null) {
+            cart = new Cart();
+            cart.setUser(userService.findById(userId));
+            cart.setCreatedAt(new Date());
+            cart = cartRepository.save(cart);
+        }
+
+        // Kiểm tra sản phẩm và size tồn tại
+        Product product = productService.getProductById(productId);
+        Optional<ProductSize> size = productSizeService.getById(sizeId);
+
+        // Kiểm tra số lượng tồn kho
+        if (size.get().getStockQuantity() < quantity) {
+            throw new RuntimeException("Số lượng sản phẩm trong kho không đủ");
+        }
+
+        // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
+        CartItem existingItem = cartItemRepository.findByCartIdAndProductIdAndProductSizeId(
+                cart.getId(), productId, sizeId);
+
+        if (existingItem != null) {
+            // Nếu đã có, cập nhật số lượng
+            existingItem.setQuantity(existingItem.getQuantity() + quantity);
+            cartItemRepository.save(existingItem);
+        } else {
+            // Nếu chưa có, tạo mới cart item
+            CartItem cartItem = new CartItem();
+            cartItem.setCart(cart);
+            cartItem.setProduct(product);
+            cartItem.setProductSize(size.orElse(null));
+            cartItem.setQuantity(quantity);
+            cartItemRepository.save(cartItem);
+        }
+
+        // Cập nhật thời gian cập nhật giỏ hàng
+        cart.setUpdatedAt(new Date());
+        cartRepository.save(cart);
+    }
+
+    // Thêm dependency injection cho ProductImageRepository
+    @Autowired
+    private ProductImageRepository productImageRepository;
+
+    public List<CartItem> getCartItems(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId);
+        if (cart == null) {
+            return new ArrayList<>();
+        }
+
+        List<CartItem> cartItems = cartItemRepository.findByCartId(cart.getId());
+
+        // Đảm bảo images được load cho mỗi sản phẩm
+        for (CartItem item : cartItems) {
+            Product product = item.getProduct();
+            List<ProductImage> images = productImageRepository.findByProductId(product.getId());
+            product.setImages(images);
+        }
+
+        return cartItems;
+    }
+    public void removeCartItems(List<Long> cartItemIds) {
+        cartItemIds.forEach(id -> cartItemRepository.deleteById(id));
+    }
+    public List<CartItem> getSelectedCartItems(String selectedItems) {
+        if (selectedItems == null || selectedItems.trim().isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<Long> itemIds = Arrays.stream(selectedItems.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+        return cartItemRepository.findAllById(itemIds); // Sửa thành cartItemRepository
+    }
+
+
+    // Tính tổng tiền của các cart items
+    public BigDecimal calculateSubtotal(List<CartItem> cartItems) {
+        return cartItems.stream()
+                .map(item -> item.getProductSize().getPrice()
+                        .multiply(new BigDecimal(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public List<CartItem> getCartItemsByIds(List<Long> ids) {
+        // Sử dụng join fetch để lấy images cùng với product
+        return cartItemRepository.findCartItemsWithProductAndImages(ids);
+    }
+
+    @Transactional
+    public void updateCartItemQuantity(Long itemId, int quantity) {
+        CartItem cartItem = cartItemRepository.findById(itemId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy item"));
+
+        if (quantity < 1) {
+            quantity = 1;
+        }
+
+        cartItem.setQuantity(quantity);
+        cartItemRepository.save(cartItem);
+    }
+
+
+}
+
