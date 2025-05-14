@@ -61,7 +61,7 @@
                                     <td>Trạng thái thanh toán:</td>
                                     <td>
                                         <span class="badge bg-${order.paymentStatus == 'PAID' ? 'success' : 'warning'}">
-                                            ${order.paymentStatus == 'PAID' ? 'Đã thanh toán' : 'Chưa thanh toán'}
+                                            ${order.paymentStatus == 'PAID' ? 'Chưa thanh toán' : 'Đã thanh toán'}
                                         </span>
                                     </td>
                                 </tr>
@@ -70,6 +70,8 @@
                     </div>
 
                     <form action="/admin/orders/${order.id}/update-status" method="post" class="mb-4">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
@@ -79,7 +81,6 @@
                                             <option value="${status}" ${order.orderStatus == status ? 'selected' : ''}>${status.vietnameseName}</option>
                                         </c:forEach>
                                     </select>
-
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -87,16 +88,13 @@
                                     <label for="paymentStatus">Trạng thái thanh toán:</label>
                                     <select name="paymentStatus" id="paymentStatus" class="form-control">
                                         <c:forEach items="${paymentStatuses}" var="status">
-                                            <option value="${status}" ${order.paymentStatus == status ? 'selected' : ''}>${status.displayValue}</option>
+                                            <option value="${status}" ${order.paymentStatus == status ? 'selected' : ''}>${status.name()}</option>
                                         </c:forEach>
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="form-group">
-                                    <label>&nbsp;</label>
-                                    <button type="submit" class="btn btn-primary form-control">Cập nhật trạng thái</button>
-                                </div>
+                            <div class="col-md-4 d-flex align-items-end">
+                                <button type="submit" class="btn btn-primary">Cập nhật trạng thái</button>
                             </div>
                         </div>
                     </form>
@@ -160,7 +158,7 @@
 <script>
     function updateOrderStatus(orderId, status) {
         document.getElementById('updateStatusBtn').addEventListener('click', function() {
-            fetch(`/admin/orders/${orderId}/status`, {
+            fetch(`/admin/orders/${order.id}/update-status`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

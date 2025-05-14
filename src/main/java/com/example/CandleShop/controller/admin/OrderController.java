@@ -3,7 +3,10 @@ package com.example.CandleShop.controller.admin;
 import com.example.CandleShop.entity.Order;
 import com.example.CandleShop.enums.OrderStatus;
 import com.example.CandleShop.enums.PaymentStatus;
+import com.example.CandleShop.service.EmailService;
 import com.example.CandleShop.service.OrderService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -12,7 +15,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -21,6 +26,9 @@ import java.time.LocalDateTime;
 public class OrderController {
     @Autowired
     private OrderService orderService;
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping
     public String listOrders(
@@ -65,28 +73,45 @@ public class OrderController {
 
 
     @PostMapping("/{id}/update-status")
-    public String updateOrderStatus(
-            @PathVariable Long id,
-            @RequestParam OrderStatus orderStatus,
-            @RequestParam(required = false) PaymentStatus paymentStatus) {
+    public String updateOrderStatus(@PathVariable Long id,
+                                    @RequestParam OrderStatus orderStatus,
+                                    @RequestParam PaymentStatus paymentStatus,
+                                    RedirectAttributes redirectAttributes) {
+        logger.info("Cập nhật trạng thái đơn hàng #{}: orderStatus={}, paymentStatus={}",
+                id, orderStatus, paymentStatus);
 
-        try {
-            // Cập nhật trạng thái đơn hàng
-            orderService.updateOrderStatus(id, orderStatus);
+        // Sửa từ getOrdersByUserId thành getOrderById
+        Order order = orderService.getOrderById(id);
 
-            // Cập nhật trạng thái thanh toán nếu có
-            if (paymentStatus != null) {
-                // Giả sử bạn có phương thức này trong OrderService
-                // Nếu không, bạn cần tạo phương thức này
-                orderService.updatePaymentStatus(id, paymentStatus);
+        if (order != null) {
+            // Lưu trạng thái cũ để so sánh
+            OrderStatus oldStatus = order.getOrderStatus();
+
+            // Cập nhật trạng thái
+            order.setOrderStatus(orderStatus);
+            order.setPaymentStatus(paymentStatus);
+            orderService.save(order);
+
+            logger.info("Đã cập nhật trạng thái đơn hàng #{} từ {} thành {}",
+                    id, oldStatus, orderStatus);
+
+            // Gửi email khi trạng thái là CONFIRMED
+            if (orderStatus == OrderStatus.CONFIRMED) {
+                logger.info("Đơn hàng #{} đã được xác nhận, chuẩn bị gửi email", id);
+                emailService.sendOrderConfirmedEmail(order);
             }
 
-            // Chuyển hướng về trang chi tiết đơn hàng
-            return "redirect:/admin/orders/" + id;
-        } catch (Exception e) {
-            // Xử lý lỗi nếu cần
-            return "redirect:/admin/orders/" + id + "?error=" + e.getMessage();
-        }
-    }
+            // Gửi email khi trạng thái là COMPLETED
+            if (orderStatus == OrderStatus.DELIVERED) {
+                logger.info("Đơn hàng #{} đã hoàn thành, chuẩn bị gửi email", id);
+                emailService.sendOrderCompletedEmail(order);
+            }
 
+            redirectAttributes.addFlashAttribute("successMessage", "Cập nhật trạng thái đơn hàng thành công!");
+        } else {
+            logger.error("Không tìm thấy đơn hàng với ID: {}", id);
+            redirectAttributes.addFlashAttribute("errorMessage", "Không tìm thấy đơn hàng!");
+        }
+        return "redirect:/admin/orders/" + id;
+    }
 }

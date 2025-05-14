@@ -20,14 +20,10 @@ import java.util.List;
 public class OrderService {
     @Autowired
     private OrderRepository orderRepository;
-
-    @Autowired
-    private CartService cartService;
-
     @Autowired
     private OrderItemRepository orderItemRepository;
     @Autowired
-    private UserService userService;
+    private EmailService emailService;
 
 
     public void updatePaymentStatus(Long orderId, PaymentStatus status) {
@@ -35,6 +31,7 @@ public class OrderService {
         if (order == null) {
             return;
         }
+
 
         order.setPaymentStatus(status);
         orderRepository.save(order);
@@ -57,8 +54,20 @@ public class OrderService {
     public boolean updateOrderStatus(Long orderId, OrderStatus status) {
         Order order = orderRepository.findById(orderId).orElse(null);
         if (order != null) {
+            // Lưu trạng thái cũ để so sánh
+            OrderStatus oldStatus = order.getOrderStatus();
+
+            // Cập nhật trạng thái mới
             order.setOrderStatus(status);
             orderRepository.save(order);
+
+            // Gửi email thông báo dựa trên trạng thái đơn hàng mới
+            if (status == OrderStatus.CONFIRMED) {
+                emailService.sendOrderConfirmedEmail(order);
+            } else if (status == OrderStatus.DELIVERED) {
+                emailService.sendOrderCompletedEmail(order);
+            }
+
             return true;
         }
         return false;
@@ -68,6 +77,19 @@ public class OrderService {
     }
     @Transactional
     public Order createOrder(Order order, List<CheckoutDTO> checkoutItems) {
+        if (order.getShippingName() == null && order.getUser() != null) {
+            // Lấy thông tin từ người dùng
+            order.setShippingName(order.getUser().getFullName());
+        }
+
+        if (order.getShippingPhone() == null && order.getUser() != null) {
+            order.setShippingPhone(order.getUser().getPhone());
+        }
+
+        // Kiểm tra các trường bắt buộc
+        if (order.getShippingName() == null || order.getShippingPhone() == null || order.getShippingAddress() == null) {
+            throw new IllegalArgumentException("Thông tin giao hàng không được để trống");
+        }
         // Tạo mã đơn hàng
         String orderNumber = generateOrderNumber();
         order.setOrderNumber(orderNumber);

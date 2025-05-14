@@ -269,17 +269,29 @@ public class CheckoutController {
             session.removeAttribute("finalAmount");
 
             // Tạo thanh toán
+            // Tạo thanh toán
             Payment payment = new Payment();
             payment.setOrder(savedOrder);
             payment.setAmount(finalAmount);
-            payment.setStatus("PENDING");
+            payment.setStatus(String .valueOf(PaymentStatus.PENDING)); // Sử dụng enum thay vì String
 
-            PaymentMethod paymentMethod = paymentMethodService.findById(orderDTO.getPaymentMethodId());
-            if (paymentMethod != null) {
-                payment.setPaymentMethod(paymentMethod);
+// Kiểm tra paymentMethodId trước
+            if (orderDTO.getPaymentMethodId() == null) {
+                redirectAttributes.addFlashAttribute("error", "Vui lòng chọn phương thức thanh toán");
+                return "redirect:/checkout/form";
             }
 
+            PaymentMethod paymentMethod = paymentMethodService.findById(orderDTO.getPaymentMethodId());
+            if (paymentMethod == null) {
+                // Nếu không tìm thấy phương thức thanh toán, thông báo lỗi và quay lại form
+                redirectAttributes.addFlashAttribute("error", "Phương thức thanh toán không hợp lệ");
+                return "redirect:/checkout/form";
+            }
+
+// Chỉ khi đã có paymentMethod hợp lệ mới gán và lưu
+            payment.setPaymentMethod(paymentMethod);
             paymentService.save(payment);
+
 
             // Chuyển hướng đến trang xác nhận đơn hàng
             redirectAttributes.addFlashAttribute("orderId", savedOrder.getId());

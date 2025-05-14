@@ -12,9 +12,13 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class EmailService {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
     @Autowired
     private JavaMailSender emailSender;
@@ -22,19 +26,33 @@ public class EmailService {
     // Gửi email khi admin xác nhận đơn hàng
     public void sendOrderConfirmedEmail(Order order) {
         try {
+            logger.info("Bắt đầu gửi email xác nhận đơn hàng #{}", order.getOrderNumber());
+
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             // Sử dụng email của khách hàng từ thông tin người dùng
             String customerEmail = order.getUser().getEmail();
+            logger.info("Chuẩn bị gửi email xác nhận đơn hàng đến: {}", customerEmail);
+
             helper.setTo(customerEmail);
             helper.setSubject("Đơn hàng #" + order.getOrderNumber() + " đã được xác nhận - Candle Shop");
 
             String content = buildOrderConfirmedEmail(order);
             helper.setText(content, true);
 
+            logger.debug("Nội dung email đã được tạo thành công");
+
+            // Thêm log trước khi gửi email
+            logger.info("Đang gửi email xác nhận đơn hàng #{} đến {}", order.getOrderNumber(), customerEmail);
+
             emailSender.send(message);
+
+            // Thêm log sau khi gửi email thành công
+            logger.info("Email xác nhận đơn hàng #{} đã được gửi thành công đến {}", order.getOrderNumber(), customerEmail);
+
         } catch (MessagingException e) {
+            logger.error("Lỗi khi gửi email xác nhận đơn hàng #{}: {}", order.getOrderNumber(), e.getMessage());
             e.printStackTrace();
         }
     }
@@ -42,19 +60,33 @@ public class EmailService {
     // Gửi email thông báo đơn hàng đã hoàn thành
     public void sendOrderCompletedEmail(Order order) {
         try {
+            logger.info("Bắt đầu gửi email hoàn thành đơn hàng #{}", order.getOrderNumber());
+
             MimeMessage message = emailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
             // Sử dụng email của khách hàng từ thông tin người dùng
             String customerEmail = order.getUser().getEmail();
+            logger.info("Chuẩn bị gửi email hoàn thành đơn hàng đến: {}", customerEmail);
+
             helper.setTo(customerEmail);
             helper.setSubject("Đơn hàng #" + order.getOrderNumber() + " đã hoàn thành - Candle Shop");
 
             String content = buildOrderCompletedEmail(order);
             helper.setText(content, true);
 
+            logger.debug("Nội dung email đã được tạo thành công");
+
+            // Thêm log trước khi gửi email
+            logger.info("Đang gửi email hoàn thành đơn hàng #{} đến {}", order.getOrderNumber(), customerEmail);
+
             emailSender.send(message);
+
+            // Thêm log sau khi gửi email thành công
+            logger.info("Email hoàn thành đơn hàng #{} đã được gửi thành công đến {}", order.getOrderNumber(), customerEmail);
+
         } catch (MessagingException e) {
+            logger.error("Lỗi khi gửi email hoàn thành đơn hàng #{}: {}", order.getOrderNumber(), e.getMessage());
             e.printStackTrace();
         }
     }

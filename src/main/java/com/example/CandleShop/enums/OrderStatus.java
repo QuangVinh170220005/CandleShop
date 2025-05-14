@@ -7,13 +7,13 @@ public enum OrderStatus {
     DELIVERED("Đã giao hàng"),
     CANCELLED("Đã hủy"),
     RETURNED("Đã hoàn trả");
-    private final String displayName;
+    private final String vietnameseName;
 
     OrderStatus(String displayName) {
-        this.displayName = displayName;
+        this.vietnameseName = displayName;
     }
 
-    public String getDisplayName() {
-        return displayName;
+    public String getVietnameseName() {
+        return vietnameseName;
     }
 }
