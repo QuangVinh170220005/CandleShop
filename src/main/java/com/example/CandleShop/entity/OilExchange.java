@@ -33,16 +33,13 @@ public class OilExchange {
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
-
     // Constructors
     public OilExchange() {
     }
-
     // Getters and Setters
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }

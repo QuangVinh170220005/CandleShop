@@ -113,7 +113,10 @@
                             </div>
                             <div class="product-actions">
                                 <a href="#"><i class="fa fa-heart-o"></i> Wishlist</a>
-                                <a href="#"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
+                                <a><i class="fa fa-shopping-cart"></i>
+                                    <button >
+                                        Add To Cart
+                                    </button></a>
                             </div>
                         </div>
                     </c:forEach>

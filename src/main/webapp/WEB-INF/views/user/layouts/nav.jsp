@@ -39,7 +39,7 @@
     .nav-group {
         display: flex;
         align-items: center;
-        gap: 2.5rem; /* Tăng khoảng cách giữa các menu item */
+        gap: 1.5rem;
     }
 
     .logo-container {
@@ -540,10 +540,6 @@
     .group:hover .dropdown-arrow {
         transform: rotate(180deg);
     }
-
-
-
-
 </style>
 <div class="navbar-wrapper">
     <nav class="navbar">
@@ -556,6 +552,7 @@
             <a href="${pageContext.request.contextPath}/shop" class="nav-link ${pageContext.request.servletPath.contains('/shop') ? 'active' : ''}" data-page="shop">Shop</a>
             <a href="${pageContext.request.contextPath}/gifts" class="nav-link ${pageContext.request.servletPath.contains('/gifts') ? 'active' : ''}" data-page="gift">Gifts</a>
             <a href="${pageContext.request.contextPath}/about" class="nav-link ${pageContext.request.servletPath.contains('/about') ? 'active' : ''}" data-page="about">About</a>
+            <a href="${pageContext.request.contextPath}/oil_exchange" class="nav-link ${pageContext.request.servletPath.contains('/oil_exchange') ? 'active' : ''}" data-page="contact">Oil exchange</a>
             <a href="${pageContext.request.contextPath}/contact" class="nav-link ${pageContext.request.servletPath.contains('/contact') ? 'active' : ''}" data-page="contact">Contact</a>
         </div>
 

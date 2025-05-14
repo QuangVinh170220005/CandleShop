@@ -101,6 +101,9 @@ public class CheckoutController {
         }
 
         User user = userService.findById(userId);
+        model.addAttribute("fullName", user.getFullName());
+        model.addAttribute("phone", user.getPhone());
+        model.addAttribute("email", user.getEmail());
         List<UserVoucher> availableVouchers = userVoucherService.getUsableVouchers(user.getId());
         model.addAttribute("availableVouchers", availableVouchers);
 
@@ -241,8 +244,13 @@ public class CheckoutController {
                 }
             }
 
+
+
             // Lưu order và tạo order items
             Order savedOrder = orderService.createOrder(order, checkoutItems);
+            //Cộng điểm cho người dùng
+            int pointEarned = finalAmount.intValue() / 10000;
+            userService.addUserPoints(userId, pointEarned);
 
             // Xóa các sản phẩm đã đặt hàng khỏi giỏ hàng
             @SuppressWarnings("unchecked")

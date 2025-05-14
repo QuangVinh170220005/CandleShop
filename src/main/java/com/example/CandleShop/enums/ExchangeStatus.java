@@ -1,11 +1,12 @@
 package com.example.CandleShop.enums;
 
 public enum ExchangeStatus {
-    PENDING("Chờ xác nhận"),
-    APPROVED("Đã duyệt"),
-    COLLECTED("Đã thu gom"),
-    COMPLETED("Hoàn thành"),
-    CANCELLED("Đã hủy");
+    PENDING("Waiting for confirmation"),
+    APPROVED("Approved"),
+    COLLECTED("Collected"),
+    COMPLETED("Completed"),
+    CANCELLED("Cancelled"),
+    REJECTED("Rejected");
 
     private final String displayValue;
 

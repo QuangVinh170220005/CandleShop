@@ -166,7 +166,6 @@ public class UserService {
 
     public boolean addUserPoints(Long userId, Integer points) {
         User user = userRepository.findById(userId).orElse(null);
-
         if (user != null) {
             user.setPoints(user.getPoints() + points);
             userRepository.save(user);

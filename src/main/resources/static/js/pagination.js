@@ -117,9 +117,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return button;
     }
-
     // Khởi tạo phân trang ban đầu
     if (totalItems > 0) {
         displayProducts(currentPage);
     }
+
 });

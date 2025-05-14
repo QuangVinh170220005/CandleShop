@@ -86,8 +86,8 @@
                 <i class='bx bxs-discount'></i> Vouchers
             </a>
 
-            <a class="nav-link ${pageContext.request.requestURI.contains('/oil-exchanges') ? 'active' : ''}"
-               href="/admin/oil-exchanges">
+            <a class="nav-link ${pageContext.request.requestURI.contains('/oil_exchanges') ? 'active' : ''}"
+               href="/admin/oil_exchanges">
                 <i class='bx bxs-droplet'></i> Oil Exchanges
             </a>
             <a class="nav-link ${pageContext.request.requestURI.contains('/rewards') ? 'active' : ''}"
