@@ -26,11 +26,20 @@ public class ProductSizeService {
     public ProductSize saveProductSize(ProductSize productSize) {
         return productSizeRepository.save(productSize);
     }
-
+    public List<ProductSize> getProductSizesByProductId(Long productId) {
+        return productSizeRepository.findByProductIdAndDeletedFalse(productId);
+    }
     public void deleteProductSize(Long id) {
         productSizeRepository.deleteById(id);
     }
     public Optional<ProductSize> getById(Long id) {
         return productSizeRepository.findById(id);
+    }
+    public void softDeleteProductSize(Long id) {
+        ProductSize size = productSizeRepository.findById(id).orElse(null);
+        if (size != null) {
+            size.setDeleted(true);
+            productSizeRepository.save(size);
+        }
     }
 }

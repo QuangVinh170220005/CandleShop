@@ -14,15 +14,9 @@ public class ProductImage {
     private Product product;
     private String imageUrl;
     private boolean isPrimary = false;
+    private boolean deleted = false;
 
     public ProductImage() {}
-
-    public ProductImage(Long id, Product product, String imageUrl, boolean isPrimary) {
-        this.id = id;
-        this.product = product;
-        this.imageUrl = imageUrl;
-        this.isPrimary = isPrimary;
-    }
 
     public Long getId() {
         return id;
@@ -55,6 +49,12 @@ public class ProductImage {
     public void setPrimary(boolean primary) {
         isPrimary = primary;
     }
+    public boolean isDeleted() {
+        return deleted;
+    }
 
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 }
 

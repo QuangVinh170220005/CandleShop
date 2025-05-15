@@ -50,6 +50,7 @@ public class VoucherService {
 
     // ADMIN: Xóa voucher
     public void deleteVoucher(Long id) {
+        userVoucherRepository.deleteByVoucherId(id);
         voucherRepository.deleteById(id);
     }
 
@@ -57,77 +58,6 @@ public class VoucherService {
     public List<Voucher> getAvailableVouchersForUser() {
         return voucherRepository.findByIsActiveTrue();
     }
-    // USER: Kiểm tra user có đủ điểm để đổi voucher không
-    public boolean canUserRedeemVoucher(Long userId, Long voucherId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        Voucher voucher = voucherRepository.findById(voucherId)
-                .orElseThrow(() -> new RuntimeException("Voucher not found"));
-
-        return user.getPoints() >= voucher.getPointsRequired();
-    }
-
-    // USER: Lấy danh sách voucher của người dùng
-    public List<UserVoucher> getUserVouchers(Long userId) {
-        // Bỏ tham số LocalDate vì không cần thiết trong query
-        return userVoucherRepository.findByUserIdOrderByIsUsedAscExpiryDateDesc(userId, LocalDate.now());
-    }
-
-    // USER: Lấy danh sách voucher có thể sử dụng của người dùng
-    public List<UserVoucher> getUsableVouchers(Long userId) {
-        return userVoucherRepository.findByUserIdAndIsUsedFalseAndExpiryDateAfter(userId, LocalDate.now());
-    }
-
-    // USER: Đổi điểm lấy voucher
-    @Transactional
-    public Map<String, Object> redeemPointsForVoucher(Long userId, Long voucherId) {
-        Map<String, Object> result = new HashMap<>();
-
-        try {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User not found"));
-
-            Voucher voucher = voucherRepository.findById(voucherId)
-                    .orElseThrow(() -> new RuntimeException("Voucher not found"));
-
-            if (!voucher.getIsActive()) {
-                result.put("success", false);
-                result.put("message", "Voucher không còn hiệu lực");
-                return result;
-            }
-
-            if (user.getPoints() < voucher.getPointsRequired()) {
-                result.put("success", false);
-                result.put("message", "Số điểm không đủ để đổi voucher này");
-                return result;
-            }
-
-            // Trừ điểm
-            user.setPoints(user.getPoints() - voucher.getPointsRequired());
-            userRepository.save(user);
-
-            // Tạo voucher cho user
-            UserVoucher userVoucher = new UserVoucher();
-            userVoucher.setUser(user);
-            userVoucher.setVoucher(voucher);
-            userVoucher.setCreatedAt(LocalDateTime.now());
-            userVoucher.setExpiryDate(LocalDate.now().plusDays(voucher.getExpiryDays()));
-
-            userVoucher = userVoucherRepository.save(userVoucher);
-
-            result.put("success", true);
-            result.put("message", "Đổi voucher thành công");
-            result.put("userVoucher", userVoucher);
-
-            return result;
-        } catch (Exception e) {
-            result.put("success", false);
-            result.put("message", "Lỗi khi đổi voucher: " + e.getMessage());
-            return result;
-        }
-    }
-
     // USER: Áp dụng voucher vào đơn hàng
     public BigDecimal calculateDiscountAmount(UserVoucher userVoucher, BigDecimal orderTotal) {
         Voucher voucher = userVoucher.getVoucher();
@@ -159,7 +89,7 @@ public class VoucherService {
         try {
             Optional<UserVoucher> userVoucherOpt = userVoucherRepository.findByIdAndUserIdAndIsUsedFalse(userVoucherId, userId);
 
-            if (!userVoucherOpt.isPresent()) {
+            if (userVoucherOpt.isEmpty()) {
                 result.put("success", false);
                 result.put("message", "Voucher không hợp lệ hoặc đã được sử dụng");
                 return result;
@@ -193,21 +123,9 @@ public class VoucherService {
             return result;
         }
     }
-
-    @Transactional
-    public void markVoucherAsUsed(Long userVoucherId) {
-        UserVoucher userVoucher = userVoucherRepository.findById(userVoucherId)
-                .orElseThrow(() -> new RuntimeException("User voucher not found"));
-
-        userVoucher.setIsUsed(true);
-        userVoucher.setUsedAt(LocalDateTime.now());
-        userVoucherRepository.save(userVoucher);
-    }
-
     @Transactional
     public Map<String, Object> redeemVoucher(Long userId, Long voucherId) {
         Map<String, Object> result = new HashMap<>();
-
         try {
             // Kiểm tra user và voucher có tồn tại không
             Optional<User> userOptional = userRepository.findById(userId);

@@ -96,6 +96,7 @@
                         <div class="col-md-4 text-end">
                             <p class="mb-0"><fmt:formatNumber value="${item.unitPrice}" type="currency" currencySymbol="₫" maxFractionDigits="0"/> x ${item.quantity}</p>
                             <p class="fw-bold mb-0"><fmt:formatNumber value="${item.subtotal}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></p>
+                            <jsp:useBean id="order" scope="request" type="com.example.CandleShop.entity.Order"/>
                             <c:if test="${order.orderStatus == 'DELIVERED' && !item.isReviewed}">
                                 <a href="/user/review/add?orderItemId=${item.id}" class="btn btn-sm btn-outline-primary mt-2">Đánh giá</a>
                             </c:if>

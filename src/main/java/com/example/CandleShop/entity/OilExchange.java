@@ -28,6 +28,7 @@ public class OilExchange {
 
     private LocalDateTime scheduledPickupDate;
     private LocalDateTime createdAt;
+    private LocalDateTime completedAt;
 
     @PrePersist
     protected void onCreate() {
@@ -122,5 +123,12 @@ public class OilExchange {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
     }
 }

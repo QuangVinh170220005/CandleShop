@@ -26,22 +26,35 @@
 
         <form action="register" method="post">
             <div class="form-group">
-                <input type="text" name="username" placeholder="Username" value="${username}" required>
+                <label>
+                    <input type="text" name="username" placeholder="Username" value="${username}" required>
+                </label>
                 <div class="icon user-icon"></div>
             </div>
 
             <div class="form-group">
-                <input type="email" name="email" placeholder="Email" value="${email}" required>
+                <label>
+                    <input type="email" name="email" placeholder="Email" value="${email}" required>
+                </label>
                 <div class="icon email-icon"></div>
             </div>
-
             <div class="form-group">
-                <input type="password" name="password" placeholder="Password" required>
+                <label>
+                    <input type="text" name="fullName" placeholder="FullName" value="${fullName}" required>
+                </label>
+                <div class="icon user-icon"></div>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="password" name="password" placeholder="Password" required>
+                </label>
                 <div class="icon lock-icon"></div>
             </div>
 
             <div class="form-group">
-                <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+                <label>
+                    <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
+                </label>
                 <div class="icon lock-icon"></div>
             </div>
 

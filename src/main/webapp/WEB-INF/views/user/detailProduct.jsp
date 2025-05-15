@@ -120,10 +120,11 @@
                         <i class="fas fa-shopping-cart"></i>
                         <span>Add to cart</span>
                     </button>
-                    <button class="wishlist-btn">
-                        <i class="fas fa-heart"></i>
-                        <span>Wishlist</span>
-                    </button>
+                    <div class="wishlist-button">
+                        <a href="${pageContext.request.contextPath}/wishlist/add/${product.id}?redirect=wishlist" class="btn wishlist-btn">
+                            <i class="fa fa-heart-o"></i> Add to Wishlist
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

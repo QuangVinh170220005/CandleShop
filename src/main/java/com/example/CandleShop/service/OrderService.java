@@ -22,20 +22,7 @@ public class OrderService {
     private OrderRepository orderRepository;
     @Autowired
     private OrderItemRepository orderItemRepository;
-    @Autowired
-    private EmailService emailService;
 
-
-    public void updatePaymentStatus(Long orderId, PaymentStatus status) {
-        Order order = orderRepository.findById(orderId).orElse(null);
-        if (order == null) {
-            return;
-        }
-
-
-        order.setPaymentStatus(status);
-        orderRepository.save(order);
-    }
     public List<Order> getOrdersByUserId(Long userId) {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId);
     }
@@ -49,29 +36,15 @@ public class OrderService {
     public Order getOrderById(Long id) {
         return orderRepository.findById(id).orElse(null);
     }
-
     @Transactional
-    public boolean updateOrderStatus(Long orderId, OrderStatus status) {
-        Order order = orderRepository.findById(orderId).orElse(null);
-        if (order != null) {
-            // Lưu trạng thái cũ để so sánh
-            OrderStatus oldStatus = order.getOrderStatus();
+    public void deleteOrder(Long id) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
 
-            // Cập nhật trạng thái mới
-            order.setOrderStatus(status);
-            orderRepository.save(order);
-
-            // Gửi email thông báo dựa trên trạng thái đơn hàng mới
-            if (status == OrderStatus.CONFIRMED) {
-                emailService.sendOrderConfirmedEmail(order);
-            } else if (status == OrderStatus.DELIVERED) {
-                emailService.sendOrderCompletedEmail(order);
-            }
-
-            return true;
-        }
-        return false;
+        orderItemRepository.deleteByOrderId(id);
+        orderRepository.delete(order);
     }
+
     public Order save(Order order) {
         return orderRepository.save(order);
     }
@@ -111,9 +84,6 @@ public class OrderService {
         }
 
         return savedOrder;
-    }
-    public List<Order> getOrdersByUser(Long userId) {
-        return orderRepository.findByUserId(userId);
     }
 
 

@@ -25,9 +25,11 @@ public class AdminOilExchangeController {
     public String listAllExchanges(Model model) {
         List<OilExchange> pendingExchanges = oilExchangeService.getPendingExchanges();
         List<OilExchange> approvedExchanges = oilExchangeService.getApprovedExchanges();
+        List<OilExchange> completedExchanges = oilExchangeService.getCompletedExchanges();
 
         model.addAttribute("pendingExchanges", pendingExchanges);
         model.addAttribute("approvedExchanges", approvedExchanges);
+        model.addAttribute("completedExchanges", completedExchanges);
 
         return "admin/oil_exchanges/list_exchanges";
     }

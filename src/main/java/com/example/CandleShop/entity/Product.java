@@ -22,8 +22,7 @@ public class Product {
     private BigDecimal discountPercentage = BigDecimal.ZERO;
     private Integer stockQuantity = 0;
     private String scentType;
-
-
+    private boolean deleted = false;
     private boolean isFeatured = false;
     private String status = "ACTIVE";
 
@@ -42,20 +41,6 @@ public class Product {
     }
 
     public Product() {
-    }
-
-    public Product(Long id, String name, String description, Category category, BigDecimal basePrice, BigDecimal discountPercentage, Integer stockQuantity, String scentType, boolean isFeatured, String status, Date createdAt) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.category = category;
-        this.basePrice = basePrice;
-        this.discountPercentage = discountPercentage;
-        this.stockQuantity = stockQuantity;
-        this.scentType = scentType;
-        this.isFeatured = isFeatured;
-        this.status = status;
-        this.createdAt = createdAt;
     }
     // Getters và setters
     public List<ProductImage> getImages() {
@@ -155,13 +140,12 @@ public class Product {
     }
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<ProductImage> image;
+    public boolean isDeleted() {
+        return deleted;
+    }
 
-    @Transient
-    public String getPrimaryImage() {
-        if (images != null && !images.isEmpty()) {
-            return images.get(0).getImageUrl();
-        }
-        return "default.jpg";
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
 }

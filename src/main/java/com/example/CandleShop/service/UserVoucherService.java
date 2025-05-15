@@ -20,10 +20,6 @@ public class UserVoucherService {
                 userId, java.time.LocalDate.now());
     }
 
-    public UserVoucher getUserVoucherById(Long id) {
-        return userVoucherRepository.findById(id).orElse(null);
-    }
-
     public void saveUserVoucher(UserVoucher userVoucher) {
         userVoucherRepository.save(userVoucher);
     }

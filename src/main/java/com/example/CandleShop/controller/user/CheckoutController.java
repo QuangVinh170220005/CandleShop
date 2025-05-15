@@ -163,7 +163,6 @@ public class CheckoutController {
         return response;
     }
 
-
     // Xử lý hủy voucher
     @PostMapping("/checkout/remove-voucher")
     @ResponseBody
@@ -244,8 +243,6 @@ public class CheckoutController {
                 }
             }
 
-
-
             // Lưu order và tạo order items
             Order savedOrder = orderService.createOrder(order, checkoutItems);
             //Cộng điểm cho người dùng
@@ -302,7 +299,6 @@ public class CheckoutController {
             return "redirect:/checkout/form";
         }
     }
-
     @GetMapping("/order/confirmation")
     public String showOrderConfirmation(Model model, @ModelAttribute("orderId") Long orderId) {
         if (orderId != null) {

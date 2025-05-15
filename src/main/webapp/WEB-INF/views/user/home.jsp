@@ -66,6 +66,7 @@
             <div class="container">
                 <div class="featured-products-container">
                     <div class="featured-products-scroll">
+                        <jsp:useBean id="featuredProducts" scope="request" type="java.util.List"/>
                         <c:forEach items="${featuredProducts}" var="product">
                             <a href="${pageContext.request.contextPath}/product/${product.id}" class="product-card">
                                 <!-- Lấy ảnh đầu tiên hoặc ảnh chính -->
@@ -91,9 +92,16 @@
                                     </p>
                                 </div>
                             </a>
+                            </a>
                         </c:forEach>
                     </div>
-                    <button class="see-all">See all</button>
+                    <button class="see-all" id="seeAllButton">See all</button>
+                    <script>
+                        document.getElementById('seeAllButton').addEventListener('click', function() {
+                            window.location.href = '${pageContext.request.contextPath}/shop';
+                        });
+                    </script>
+
                 </div>
             </div>
         </section>

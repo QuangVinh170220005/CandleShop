@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updatePagination(page);
 
         // Cuộn lên đầu danh sách sản phẩm
-        document.getElementById('product-grid').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById('product-grid').scrollIntoView({behavior: 'smooth', block: 'start'});
     }
 
     // Hàm cập nhật giao diện phân trang
@@ -117,9 +117,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
         return button;
     }
+
     // Khởi tạo phân trang ban đầu
     if (totalItems > 0) {
         displayProducts(currentPage);
     }
+        document.addEventListener('DOMContentLoaded', function() {
+        // Lắng nghe sự kiện thay đổi size
+        const sizeSelects = document.querySelectorAll('.product-size-select');
+
+        sizeSelects.forEach(select => {
+        select.addEventListener('change', function() {
+        const productId = this.getAttribute('data-product-id');
+        const selectedOption = this.options[this.selectedIndex];
+        const price = selectedOption.getAttribute('data-price');
+
+        // Cập nhật hiển thị giá
+        const priceElement = document.querySelector(`.product-item[data-product-id="${productId}"] .product-price`);
+        if (priceElement) {
+        priceElement.innerText = new Intl.NumberFormat('vi-VN').format(price) + ' VND';
+    }
+    });
+    });
+    });
+
 
 });

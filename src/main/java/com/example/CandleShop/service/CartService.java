@@ -7,10 +7,7 @@ import com.example.CandleShop.repository.ProductImageRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class CartService {
@@ -27,9 +24,11 @@ public class CartService {
     @Autowired
     private UserService userService;
 
-
     @Autowired
     private ProductSizeService productSizeService;
+
+    @Autowired
+    private ProductImageRepository productImageRepository;
 
     @Transactional
     public void addToCart(Long userId, Long productId, Long sizeId, Integer quantity) {
@@ -68,15 +67,13 @@ public class CartService {
             cartItem.setQuantity(quantity);
             cartItemRepository.save(cartItem);
         }
-
         // Cập nhật thời gian cập nhật giỏ hàng
         cart.setUpdatedAt(new Date());
         cartRepository.save(cart);
     }
 
     // Thêm dependency injection cho ProductImageRepository
-    @Autowired
-    private ProductImageRepository productImageRepository;
+
 
     public List<CartItem> getCartItems(Long userId) {
         Cart cart = cartRepository.findByUserId(userId);
@@ -97,15 +94,6 @@ public class CartService {
     }
     public void removeCartItems(List<Long> cartItemIds) {
         cartItemIds.forEach(id -> cartItemRepository.deleteById(id));
-    }
-    public List<CartItem> getSelectedCartItems(String selectedItems) {
-        if (selectedItems == null || selectedItems.trim().isEmpty()) {
-            return new ArrayList<>();
-        }
-        List<Long> itemIds = Arrays.stream(selectedItems.split(","))
-                .map(Long::parseLong)
-                .collect(Collectors.toList());
-        return cartItemRepository.findAllById(itemIds); // Sửa thành cartItemRepository
     }
     public List<CartItem> getCartItemsByIds(List<Long> ids) {
         // Sử dụng join fetch để lấy images cùng với product

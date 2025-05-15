@@ -59,22 +59,11 @@ public class UserService {
     public User getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
-    public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    public User getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
     public User findById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
     }
-    public User createUser(User user) throws Exception {
+    public void createUser(User user) throws Exception {
         if (userRepository.findByUsername(user.getUsername()) != null) {
             throw new Exception("Tên đăng nhập đã được sử dụng");
         }
@@ -95,10 +84,10 @@ public class UserService {
         }
         user.setCreatedAt(LocalDateTime.now());
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
-    public User updateUser(Long id, User updatedUser, Boolean changePassword, String newPassword) throws Exception {
+    public void updateUser(Long id, User updatedUser, Boolean changePassword, String newPassword) throws Exception {
         User existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new Exception("Không tìm thấy người dùng với ID: " + id));
 
@@ -128,7 +117,7 @@ public class UserService {
             existingUser.setPassword(encoder.encode(newPassword));
         }
 
-        return userRepository.save(existingUser);
+        userRepository.save(existingUser);
     }
 
     public void deleteUser(Long id) throws Exception {
@@ -151,28 +140,12 @@ public class UserService {
 
         userRepository.save(user);
     }
-
-    public boolean changeUserStatus(Long userId, String status) {
-        User user = userRepository.findById(userId).orElse(null);
-
-        if (user != null) {
-            user.setStatus(status);
-            userRepository.save(user);
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean addUserPoints(Long userId, Integer points) {
+    public void addUserPoints(Long userId, Integer points) {
         User user = userRepository.findById(userId).orElse(null);
         if (user != null) {
             user.setPoints(user.getPoints() + points);
             userRepository.save(user);
-            return true;
         }
-
-        return false;
     }
 
 

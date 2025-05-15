@@ -23,7 +23,7 @@ public class OilExchangeService {
     @Autowired
     private UserRepository userRepository;
 
-    private static final int POINTS_PER_LITER = 20;
+    private static final int POINTS_PER_LITER = 10;
     private static final double MINIMUM_OIL_AMOUNT = 5.0;
 
     // Tạo mã trao đổi dầu
@@ -39,7 +39,7 @@ public class OilExchangeService {
 
     // Tạo yêu cầu trao đổi dầu mới
     @Transactional
-    public OilExchange createExchange(OilExchange exchange, Long userId) throws Exception {
+    public void createExchange(OilExchange exchange, Long userId) throws Exception {
         // Kiểm tra số lượng dầu tối thiểu
         if (exchange.getOilAmount() < MINIMUM_OIL_AMOUNT) {
             throw new Exception("Số lượng dầu tối thiểu phải từ 5 lít trở lên");
@@ -57,14 +57,16 @@ public class OilExchangeService {
         exchange.setStatus(ExchangeStatus.PENDING);
         exchange.setExchangeNumber(generateExchangeNumber());
 
-        return oilExchangeRepository.save(exchange);
+        oilExchangeRepository.save(exchange);
     }
 
     // Lấy tất cả yêu cầu của một người dùng
     public List<OilExchange> getUserExchanges(User user) {
         return oilExchangeRepository.findByUserOrderByCreatedAtDesc(user);
     }
-
+    public List<OilExchange> getCompletedExchanges() {
+        return oilExchangeRepository.findByStatus(ExchangeStatus.COMPLETED);
+    }
     // Lấy yêu cầu theo ID
     public OilExchange getExchangeById(Long id) throws Exception {
         return oilExchangeRepository.findById(id)
@@ -83,7 +85,7 @@ public class OilExchangeService {
 
     // Phê duyệt yêu cầu
     @Transactional
-    public OilExchange approveExchange(Long exchangeId, LocalDateTime pickupDate) throws Exception {
+    public void approveExchange(Long exchangeId, LocalDateTime pickupDate) throws Exception {
         OilExchange exchange = getExchangeById(exchangeId);
 
         if (exchange.getStatus() != ExchangeStatus.PENDING) {
@@ -93,12 +95,12 @@ public class OilExchangeService {
         exchange.setStatus(ExchangeStatus.APPROVED);
         exchange.setScheduledPickupDate(pickupDate);
 
-        return oilExchangeRepository.save(exchange);
+        oilExchangeRepository.save(exchange);
     }
 
     // Hoàn thành yêu cầu và cộng điểm cho người dùng
     @Transactional
-    public OilExchange completeExchange(Long exchangeId) throws Exception {
+    public void completeExchange(Long exchangeId) throws Exception {
         OilExchange exchange = getExchangeById(exchangeId);
 
         if (exchange.getStatus() != ExchangeStatus.APPROVED) {
@@ -114,12 +116,12 @@ public class OilExchangeService {
         // Cập nhật trạng thái yêu cầu
         exchange.setStatus(ExchangeStatus.COMPLETED);
 
-        return oilExchangeRepository.save(exchange);
+        oilExchangeRepository.save(exchange);
     }
 
     // Từ chối yêu cầu
     @Transactional
-    public OilExchange rejectExchange(Long exchangeId) throws Exception {
+    public void rejectExchange(Long exchangeId) throws Exception {
         OilExchange exchange = getExchangeById(exchangeId);
 
         if (exchange.getStatus() != ExchangeStatus.PENDING) {
@@ -128,12 +130,12 @@ public class OilExchangeService {
 
         exchange.setStatus(ExchangeStatus.REJECTED);
 
-        return oilExchangeRepository.save(exchange);
+        oilExchangeRepository.save(exchange);
     }
 
     // Hủy yêu cầu
     @Transactional
-    public OilExchange cancelExchange(Long exchangeId) throws Exception {
+    public void cancelExchange(Long exchangeId) throws Exception {
         OilExchange exchange = getExchangeById(exchangeId);
 
         if (exchange.getStatus() != ExchangeStatus.PENDING && exchange.getStatus() != ExchangeStatus.APPROVED) {
@@ -142,6 +144,6 @@ public class OilExchangeService {
 
         exchange.setStatus(ExchangeStatus.CANCELLED);
 
-        return oilExchangeRepository.save(exchange);
+        oilExchangeRepository.save(exchange);
     }
 }

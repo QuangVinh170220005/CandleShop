@@ -39,7 +39,7 @@ public class ProductController {
 
     @GetMapping
     public String listProducts(Model model) {
-        List<Product> products = productService.getAllProductsWithImages();
+        List<Product> products = productService.getAllProductActives();
         model.addAttribute("products", products);
         return "admin/products/listProduct";
     }
@@ -194,10 +194,10 @@ public class ProductController {
             @RequestParam(required = false) List<Long> deleteImageIds,
             @RequestParam(required = false) Long primaryImageId,
             @RequestParam(required = false) List<Long> existingSizeIds,
-            @RequestParam(required = false) List<Integer> existingSizeValues,
+            @RequestParam(required = false) List<String> existingSizeValues,
             @RequestParam(required = false) List<BigDecimal> existingSizePrices,
             @RequestParam(required = false) List<Integer> existingSizeStocks,
-            @RequestParam(required = false) List<Integer> newSizeValues,
+            @RequestParam(required = false) List<String> newSizeValues,
             @RequestParam(required = false) List<BigDecimal> newSizePrices,
             @RequestParam(required = false) List<Integer> newSizeStocks,
             @RequestParam(required = false) List<Long> deleteSizeIds,
@@ -222,6 +222,21 @@ public class ProductController {
             // Lưu sản phẩm đã cập nhật
             productService.saveProduct(existingProduct);
 
+            // Xử lý cập nhật ảnh chính
+            if (primaryImageId != null) {
+                // Đặt tất cả ảnh về không phải ảnh chính
+                List<ProductImage> allImages = productImageService.getImagesByProductId(id);
+                for (ProductImage img : allImages) {
+                    img.setPrimary(false);
+                    productImageService.saveProductImage(img);
+                }
+
+                // Đặt ảnh được chọn làm ảnh chính
+                ProductImage primaryImage = productImageService.getProductImageById(primaryImageId);
+                primaryImage.setPrimary(true);
+                productImageService.saveProductImage(primaryImage);
+            }
+
             // Xóa hình ảnh nếu có
             if (deleteImageIds != null && !deleteImageIds.isEmpty()) {
                 for (Long imageId : deleteImageIds) {
@@ -242,13 +257,24 @@ public class ProductController {
                 }
             }
 
-            // Cập nhật kích thước hiện có
+            // Cập nhật kích thước sản phẩm hiện có
             if (existingSizeIds != null && !existingSizeIds.isEmpty()) {
                 for (int i = 0; i < existingSizeIds.size(); i++) {
+                    // Bỏ qua nếu kích thước này được đánh dấu xóa
+                    if (deleteSizeIds != null && deleteSizeIds.contains(existingSizeIds.get(i))) {
+                        continue;
+                    }
+
                     ProductSize size = productSizeService.getProductSizeById(existingSizeIds.get(i));
-                    size.setSizeValue(String.valueOf(existingSizeValues.get(i)));
-                    size.setPrice(existingSizePrices.get(i));
-                    size.setStockQuantity(existingSizeStocks.get(i));
+                    if (existingSizeValues != null && i < existingSizeValues.size()) {
+                        size.setSizeValue(existingSizeValues.get(i));
+                    }
+                    if (existingSizePrices != null && i < existingSizePrices.size()) {
+                        size.setPrice(existingSizePrices.get(i));
+                    }
+                    if (existingSizeStocks != null && i < existingSizeStocks.size()) {
+                        size.setStockQuantity(existingSizeStocks.get(i));
+                    }
                     productSizeService.saveProductSize(size);
                 }
             }
@@ -256,12 +282,25 @@ public class ProductController {
             // Thêm kích thước mới nếu có
             if (newSizeValues != null && !newSizeValues.isEmpty()) {
                 for (int i = 0; i < newSizeValues.size(); i++) {
-                    ProductSize productSize = new ProductSize();
-                    productSize.setProduct(existingProduct);
-                    productSize.setSizeValue(String.valueOf(newSizeValues.get(i)));
-                    productSize.setPrice(newSizePrices.get(i));
-                    productSize.setStockQuantity(newSizeStocks.get(i));
-                    productSizeService.saveProductSize(productSize);
+                    if (newSizeValues.get(i) != null && !newSizeValues.get(i).isEmpty()) {
+                        ProductSize newSize = new ProductSize();
+                        newSize.setProduct(existingProduct);
+                        newSize.setSizeValue(newSizeValues.get(i));
+
+                        if (newSizePrices != null && i < newSizePrices.size()) {
+                            newSize.setPrice(newSizePrices.get(i));
+                        } else {
+                            newSize.setPrice(basePrice);
+                        }
+
+                        if (newSizeStocks != null && i < newSizeStocks.size()) {
+                            newSize.setStockQuantity(newSizeStocks.get(i));
+                        } else {
+                            newSize.setStockQuantity(0);
+                        }
+
+                        productSizeService.saveProductSize(newSize);
+                    }
                 }
             }
 
@@ -272,9 +311,10 @@ public class ProductController {
                 }
             }
 
-            redirectAttributes.addFlashAttribute("success", "Cập nhật sản phẩm thành công");
+            redirectAttributes.addFlashAttribute("success", "Cập nhật sản phẩm thành công!");
             return "redirect:/admin/products";
         } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Lỗi khi cập nhật sản phẩm: " + e.getMessage());
             return "redirect:/admin/products/edit/" + id;
         }
@@ -293,14 +333,14 @@ public class ProductController {
 
         return "admin/products/view";
     }
-
-    // Xóa sản phẩm
+    // Thay thế phương thức xóa sản phẩm hiện tại bằng phương thức xóa mềm
     @PostMapping("/delete/{id}")
     public String deleteProduct(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            productService.deleteProduct(id);
+            productService.softDeleteProduct(id);
             redirectAttributes.addFlashAttribute("success", "Xóa sản phẩm thành công");
         } catch (Exception e) {
+            e.printStackTrace();
             redirectAttributes.addFlashAttribute("error", "Lỗi khi xóa sản phẩm: " + e.getMessage());
         }
         return "redirect:/admin/products";

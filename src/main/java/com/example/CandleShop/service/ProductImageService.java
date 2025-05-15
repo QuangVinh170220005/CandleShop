@@ -34,8 +34,8 @@ public class ProductImageService {
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy hình ảnh với ID: " + id));
     }
 
-    public ProductImage saveProductImage(ProductImage productImage) {
-        return productImageRepository.save(productImage);
+    public void saveProductImage(ProductImage productImage) {
+        productImageRepository.save(productImage);
     }
 
     public String saveImage(MultipartFile file) throws IOException {
@@ -54,22 +54,32 @@ public class ProductImageService {
 
         return fileName;
     }
-
     public void deleteProductImage(Long id) {
         ProductImage image = getProductImageById(id);
 
-        // Xóa file vật lý
+        // Nếu đây là ảnh chính và còn ảnh khác, đặt ảnh khác làm ảnh chính
+        if (image.isPrimary()) {
+            List<ProductImage> otherImages = productImageRepository.findByProductIdAndIdNot(image.getProduct().getId(), id);
+            if (!otherImages.isEmpty()) {
+                ProductImage newPrimaryImage = otherImages.get(0);
+                newPrimaryImage.setPrimary(true);
+                productImageRepository.save(newPrimaryImage);
+            }
+        }
+
+        // Xóa file ảnh nếu cần
         try {
             Path filePath = Paths.get(uploadPath, image.getImageUrl());
             Files.deleteIfExists(filePath);
         } catch (IOException e) {
-            // Log error
-            e.printStackTrace();
+            // Log lỗi nhưng vẫn tiếp tục xóa record trong database
+            System.err.println("Không thể xóa file ảnh: " + e.getMessage());
         }
 
         // Xóa record trong database
         productImageRepository.deleteById(id);
     }
+
 }
 
 

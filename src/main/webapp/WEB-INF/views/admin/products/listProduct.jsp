@@ -112,9 +112,6 @@
                                     </td>
                                     <td>
                                         <div class="btn-group">
-                                            <a href="/admin/products/detail/${product.id}" class="btn btn-sm btn-info">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
                                             <a href="/admin/products/edit/${product.id}" class="btn btn-sm btn-primary">
                                                 <i class="fas fa-edit"></i>
                                             </a>
@@ -148,7 +145,9 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                <a href="#" id="deleteLink" class="btn btn-danger">Xóa</a>
+                <form id="deleteForm" method="post" action="">
+                    <button type="submit" class="btn btn-danger">Xóa</button>
+                </form>
             </div>
         </div>
     </div>
@@ -158,7 +157,7 @@
 <script>
     function confirmDelete(id, name) {
         document.getElementById('productName').textContent = name;
-        document.getElementById('deleteLink').href = '/admin/products/delete/' + id;
+        document.getElementById('deleteForm').action = '/admin/products/delete/' + id;
         var deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
         deleteModal.show();
     }

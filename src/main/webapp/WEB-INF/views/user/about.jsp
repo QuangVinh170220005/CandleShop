@@ -34,8 +34,6 @@
                 </p>
             </div>
         </div>
-
-        <!-- Middle Section - DO's and DON'Ts -->
         <div class="relative mb-16">
             <div class="flex justify-between items-center">
                 <!-- DON'T Section -->

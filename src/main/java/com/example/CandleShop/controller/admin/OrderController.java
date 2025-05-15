@@ -10,14 +10,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -51,7 +47,9 @@ public class OrderController {
         model.addAttribute("totalPages", orderPage.getTotalPages());
         model.addAttribute("orderStatuses", OrderStatus.values());
         model.addAttribute("selectedStatus", status);
+        assert fromDate != null;
         model.addAttribute("fromDate", fromDate);
+        assert toDate != null;
         model.addAttribute("toDate", toDate);
 
         return "admin/orders/list_orders";
@@ -79,8 +77,6 @@ public class OrderController {
                                     RedirectAttributes redirectAttributes) {
         logger.info("Cập nhật trạng thái đơn hàng #{}: orderStatus={}, paymentStatus={}",
                 id, orderStatus, paymentStatus);
-
-        // Sửa từ getOrdersByUserId thành getOrderById
         Order order = orderService.getOrderById(id);
 
         if (order != null) {

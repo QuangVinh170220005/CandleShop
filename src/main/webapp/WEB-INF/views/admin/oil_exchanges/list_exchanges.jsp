@@ -18,10 +18,11 @@
     pageContext.setAttribute("dateTimeFormatter", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
 %>
 <jsp:include page="../layouts/header.jsp" />
+<jsp:include page="../layouts/sidebar.jsp" />
 
 <div class="container-fluid mt-4">
     <div class="row">
-        <jsp:include page="../layouts/sidebar.jsp" />
+
 
         <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -44,6 +45,11 @@
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="approved-tab" data-bs-toggle="tab" data-bs-target="#approved" type="button" role="tab">
                         Đã duyệt, chờ lấy dầu <span class="badge bg-info">${approvedExchanges.size()}</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab">
+                        Đã hoàn thành <span class="badge bg-success">${completedExchanges.size()}</span>
                     </button>
                 </li>
             </ul>
@@ -98,6 +104,7 @@
                         </c:otherwise>
                     </c:choose>
                 </div>
+                <!-- Tab đã duyệt, chờ lấy dầu -->
                 <div class="tab-pane fade" id="approved" role="tabpanel">
                     <c:choose>
                         <c:when test="${empty approvedExchanges}">
@@ -170,6 +177,64 @@
                                                 </div>
                                             </div>
                                         </div>
+                                    </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </c:otherwise>
+                    </c:choose>
+                </div>
+                <!-- Tab đã hoàn thành -->
+                <div class="tab-pane fade" id="completed" role="tabpanel">
+                    <c:choose>
+                        <c:when test="${empty completedExchanges}">
+                            <p class="text-center py-4">Không có yêu cầu trao đổi dầu nào đã hoàn thành.</p>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>Mã yêu cầu</th>
+                                        <th>Người dùng</th>
+                                        <th>Ngày tạo</th>
+                                        <th>Ngày hoàn thành</th>
+                                        <th>Số lượng dầu</th>
+                                        <th>Điểm</th>
+                                        <th>Thao tác</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <c:forEach items="${completedExchanges}" var="exchange">
+                                        <tr>
+                                            <td>${exchange.exchangeNumber}</td>
+                                            <td>${exchange.user.fullName}</td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${exchange.createdAt != null}">
+                                                        ${exchange.createdAt.format(pageContext.getAttribute("dateTimeFormatter"))}
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        N/A
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td>
+                                                <c:choose>
+                                                    <c:when test="${exchange.completedAt != null}">
+                                                        ${exchange.completedAt.format(pageContext.getAttribute("dateTimeFormatter"))}
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        N/A
+                                                    </c:otherwise>
+                                                </c:choose>
+                                            </td>
+                                            <td>${exchange.oilAmount} lít</td>
+                                            <td>${exchange.pointsEarned}</td>
+                                            <td>
+                                                <a href="${pageContext.request.contextPath}/admin/oil_exchanges/${exchange.id}" class="btn btn-sm btn-info">Chi tiết</a>
+                                            </td>
+                                        </tr>
                                     </c:forEach>
                                     </tbody>
                                 </table>

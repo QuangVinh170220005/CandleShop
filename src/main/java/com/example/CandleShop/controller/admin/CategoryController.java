@@ -2,6 +2,7 @@ package com.example.CandleShop.controller.admin;
 
 import com.example.CandleShop.entity.Category;
 import com.example.CandleShop.service.CategoryService;
+import com.example.CandleShop.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,6 +15,8 @@ import java.util.List;
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    private ProductService productService;
 
     @GetMapping
     public String listCategory(Model model) {
@@ -61,6 +64,14 @@ public class CategoryController {
     @PostMapping("/delete")
     public String deleteCategory(@RequestParam Long id, RedirectAttributes redirectAttributes) {
         try {
+            boolean hasProducts = productService.existsByCategoryId(id);
+
+            if (hasProducts) {
+                redirectAttributes.addFlashAttribute("errorMessage",
+                        "Không thể xóa danh mục vì còn chứa sản phẩm. Vui lòng xóa sản phẩm trước.");
+                return "redirect:/admin/categories";
+            }
+
             categoryService.deleteCategory(id);
             redirectAttributes.addFlashAttribute("successMessage", "Xóa danh mục thành công");
         } catch (Exception e) {
@@ -68,5 +79,6 @@ public class CategoryController {
         }
         return "redirect:/admin/categories";
     }
+
 }
 

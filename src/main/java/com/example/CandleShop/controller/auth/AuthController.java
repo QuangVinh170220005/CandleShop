@@ -12,8 +12,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class AuthController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+
+    public AuthController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping("/register")
     public String showRegister() {
@@ -68,15 +71,20 @@ public class AuthController {
                                RedirectAttributes redirectAttributes) {
         try {
             User user = userService.login(usernameOrEmail, password);
-            session.setAttribute("user", user); // Đã lưu user vào session
+            session.setAttribute("user", user);
             session.setAttribute("userId", user.getId());
-            return "redirect:/home";
+
+            // Điều hướng dựa trên vai trò
+            if (user.getRole() == User.Role.ADMIN) {
+                return "redirect:/admin/dashboard";
+            } else {
+                return "redirect:/home";
+            }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             return "redirect:/login";
         }
     }
-
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {

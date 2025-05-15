@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,11 +27,10 @@
 
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pt-10">
     <h1 class="text-2xl font-semibold text-gray-900 mb-8">Giỏ hàng của bạn</h1>
-
     <c:if test="${empty cartItems}">
         <div class="text-center py-16">
             <p class="text-gray-500 mb-4">Giỏ hàng của bạn đang trống</p>
-            <a href="/shop"
+            <a href="${pageContext.request.contextPath}/shop"
                class="inline-block bg-brown-600 text-white px-6 py-3 rounded-md
                           hover:bg-brown-700 transition-colors">
                 Tiếp tục mua sắm
@@ -65,12 +63,12 @@
                             </p>
                         </div>
                             <div class="flex items-center border rounded-md">
-                                <input type="number"
-                                       value="${item.quantity}"
-                                       min="1"
-                                       class="w-12 text-center border-x py-1"
-                                       onchange="updateQuantity(${item.id}, this.value, true)"
-                                       id="quantity-${item.id}">
+                                <label for="quantity-${item.id}">
+                                </label><input type="number" value="${item.quantity}"
+                                                                                min="1"
+                                                                                class="w-12 text-center border-x py-1"
+                                                                                onchange="updateQuantity(${item.id}, this.value, true)"
+                                                                                id="quantity-${item.id}">
                             </div>
                         <div class="text-right">
                             <p class="font-medium text-gray-900">
@@ -95,7 +93,6 @@
 
                 <!-- Hiển thị các sản phẩm đã chọn -->
                 <div id="selected-items" class="mb-4 space-y-2">
-                    <!-- Sẽ được điền bằng JavaScript -->
                 </div>
 
                 <div class="border-t border-gray-200 pt-4 space-y-2">
@@ -194,8 +191,6 @@
 
             // Tìm thẻ div cha chứa thông tin sản phẩm
             const productContainer = checkbox.closest('.bg-white');
-            // Lấy tên sản phẩm
-            const productName = productContainer.querySelector('h3').textContent;
 
             // Hiển thị sản phẩm đã chọn
             const itemElement = document.createElement('div');

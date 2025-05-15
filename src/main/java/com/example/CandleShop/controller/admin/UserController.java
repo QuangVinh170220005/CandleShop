@@ -43,8 +43,6 @@ public class UserController {
         }
     }
 
-    // Bổ sung vào UserController.java
-
     @GetMapping("/detail/{id}")
     public String viewUserDetail(@PathVariable Long id, Model model) {
         User user = userService.getUserById(id);

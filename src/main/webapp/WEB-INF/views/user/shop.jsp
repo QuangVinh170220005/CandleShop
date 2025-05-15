@@ -61,10 +61,11 @@
                                     <fmt:formatNumber value="${product.basePrice}" type="number" groupingUsed="true" maxFractionDigits="0"/> VND
                                 </div>
                             </div>
-                            <div class="product-actions">
-                                <a href="#"><i class="fa fa-heart-o"></i> Wishlist</a>
-                                <a href="#"><i class="fa fa-shopping-cart"></i> Add to Cart</a>
-                            </div>
+                                <div class="product-actions">
+                                    <a href="${pageContext.request.contextPath}/wishlist/add/${product.id}" class="wishlist-btn">
+                                        <i class="fa fa-heart-o"></i> Wishlist
+                                    </a>
+                                </div>
                             </a>
                         </div>
                     </c:forEach>
@@ -89,6 +90,7 @@
         <div class="popular-products">
             <c:choose>
                 <c:when test="${not empty allProducts}">
+                    <jsp:useBean id="allProducts" scope="request" type="java.util.List"/>
                     <c:forEach items="${allProducts}" var="product" begin="0" end="2">
                         <div class="product-card">
                             <c:set var="imgUrl" value="${pageContext.request.contextPath}/images/default-product.png" />

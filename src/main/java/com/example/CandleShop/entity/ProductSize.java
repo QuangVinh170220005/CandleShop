@@ -16,13 +16,20 @@ public class ProductSize {
     private String sizeValue = "";
     private BigDecimal price = BigDecimal.ZERO;
     private Integer stockQuantity = 0;
+    private boolean deleted = false;
 
     // Constructors
     public ProductSize() {
         // Constructor mặc định
     }
 
-    // Getters and Setters
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
     public Long getId() {
         return id;
     }
